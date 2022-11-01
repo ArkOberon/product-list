@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { createNewProduct } from '../actions/productActions'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom';
 
 const NewProduct = () => {
 
@@ -9,7 +10,11 @@ const NewProduct = () => {
 
   const dispatch = useDispatch()
 
+  const loading = useSelector((state) => state.products.loading)
+  const error = useSelector(state => state.products.error)
+
   const addProduct = (product) => dispatch(createNewProduct(product))
+  let navigate = useNavigate()
 
   const submitNewProduct = e => {
     e.preventDefault()
@@ -22,6 +27,14 @@ const NewProduct = () => {
       name,
       price
     })
+
+    async function handleSubmit(event) {
+      event.preventDefault();
+      await submitForm(event.target);
+      navigate("../success", { replace: true });
+    }
+
+    navigate('/', {replace: true})
   }
 
   return ( 
@@ -63,6 +76,16 @@ const NewProduct = () => {
                   </button>
                 </div>
               </form>
+
+              { loading ? <p>LOADING...</p> : null}
+              {error ? 
+                <p className='alert alert-danger p2 mt-4 text-center'>
+                  Error Add Product
+                </p>
+                
+                : null
+              }
+
             </div>
           </div>
         </div>
